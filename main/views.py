@@ -3,8 +3,8 @@ from .models import Issue
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .serializers import IssueSerializerWithTitles, ProfileSerializer, IssueSerializer, ProjectSerializer, IssueSeveritySerializer, IssueStatusSerializer, IssueTypeSerializer
-from .models import Profile, Project, Issue, IssueSeverity, IssueType, IssueStatus
+from .serializers import IssueSerializerWithTitles, ProfileSerializer, IssueSerializer, ProjectSerializer, IssueSeveritySerializer, IssueStatusSerializer, IssueTypeSerializer, AssigneesSerializer
+from .models import Profile, Project, Issue, IssueSeverity, IssueType, IssueStatus, Assignees
 
 
 class ProfileList(APIView):
@@ -28,33 +28,6 @@ class ProjectList(APIView):
         )
         new_project.save()
         serializer = ProjectSerializer(new_project)
-        return Response(serializer.data)
-
-
-class IssueListWithTitles(APIView):
-    # api/v1/my-issues/?projectid=
-    def get(self, request, format=None):
-        projectid = request.GET.get("projectid")
-        if projectid:
-            issues = Issue.objects.filter(projectid=projectid)
-        else:
-            issues = Issue.objects.all()
-        issuesWithTitles = []
-        for i in issues:
-            issue = {
-                "id": i.id,
-                "created": i.created,
-                "title": i.title,
-                "description": i.description,
-                "time_estimate": i.time_estimate,
-                "user": "",
-                "project": i.projectid,
-                "issueType": i.issueTypeId,
-                "issueStatus": i.issueStatusId,
-                "issueSeverity": i.issueSeverityId
-            }
-            issuesWithTitles.append(issue)
-        serializer = IssueSerializerWithTitles(issuesWithTitles, many=True)
         return Response(serializer.data)
 
 
@@ -123,4 +96,16 @@ class TypeList(APIView):
         else:
             issueType = IssueType.objects.all()
         serializer = IssueTypeSerializer(issueType, many=True)
+        return Response(serializer.data)
+
+
+class AssigneesList(APIView):
+    def get(self, request, format=None):
+        userId = request.GET.get("userId")
+        if userId:
+            assignee = Assignees.objects.filter(userId=userId)
+        else:
+            assignee = Assignees.objects.all()
+
+        serializer = AssigneesSerializer(assignee, many=True)
         return Response(serializer.data)

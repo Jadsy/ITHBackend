@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-c(hh&sln*f13w$lz&ug7^p2fob%*3!ly8+qt*s6p&8fi9y+abo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['fadiserver.herokuapp.com']
+ALLOWED_HOSTS = ['fadiserver.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'serverapp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ITH DB',
+        'NAME': 'd5m1o757nkcaso',
         'USER': 'pezgkynvtaelmn',
         'PASSWORD': '8f5548725b71cc3f1e1e9530fff9433620f721ada2814a5c38db73bf50d74339',
         'HOST': 'ec2-54-156-24-159.compute-1.amazonaws.com',
@@ -132,5 +132,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8080/',
+    'http://localhost:8080',
 ]

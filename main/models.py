@@ -98,25 +98,26 @@ class Issue(models.Model):
 
 
 class UserRole(models.Model):
-    # ROLE = (
-    #     ('up', 'Up Vote'),
-    #     ('down', 'Down Vote')
-    # )
+
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
-    title = models.CharField(max_length=200,
-                             # choices=ROLE
-                             )
+    title = models.CharField(max_length=200)
 
     def __str__(self):
         return self.title
 
 
 class Assignees(models.Model):
-    # issueId =
-    # userId =
-    userRoleId = models.ForeignKey(UserRole, on_delete=models.CASCADE)
+    issueId = models.ForeignKey(
+        Issue, on_delete=models.CASCADE, null=True, blank=True)
+    userId = models.ForeignKey(
+        Profile, on_delete=models.CASCADE, null=True, blank=True)
+    userRoleId = models.ForeignKey(
+        UserRole, on_delete=models.CASCADE, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Assignee'
 
 
 class IssueComment(models.Model):

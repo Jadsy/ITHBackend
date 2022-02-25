@@ -104,6 +104,8 @@ class AssigneesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assignees
         fields = (
+            "issueId",
+            "userId",
             "userRoleId",
             "created",
         )
