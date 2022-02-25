@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-c(hh&sln*f13w$lz&ug7^p2fob%*3!ly8+qt*s6p&8fi9y+abo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['fadiserver.herokuapp.com']
 
 
 # Application definition
