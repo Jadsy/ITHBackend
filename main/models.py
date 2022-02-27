@@ -136,3 +136,20 @@ class Attachment(models.Model):
     issueId = models.ForeignKey(Issue, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     # URI =
+
+
+class IssueWithTitles(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True,
+                          primary_key=True, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField(null=True, blank=True)
+    time_estimate = models.FloatField(null=True, blank=True)
+    user = models.CharField(max_length=200)
+    project = models.CharField(max_length=200)
+    issueType = models.CharField(max_length=200)
+    issueStatus = models.CharField(max_length=200)
+    issueSeverity = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.title

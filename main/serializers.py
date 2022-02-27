@@ -132,3 +132,20 @@ class AttachmentSerializer(serializers.ModelSerializer):
             "issueId",
             "title",
         )
+
+
+class IssueSerializerWithTitles(serializers.ModelSerializer):
+    class Meta:
+        model = IssueWithTitles
+        fields = (
+            "id",
+            "created",
+            "title",
+            "description",
+            "time_estimate",
+            "user",
+            "project",
+            "issueType",
+            "issueStatus",
+            "issueSeverity",
+        )

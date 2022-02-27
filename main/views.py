@@ -109,3 +109,30 @@ class AssigneesList(APIView):
 
         serializer = AssigneesSerializer(assignee, many=True)
         return Response(serializer.data)
+
+
+class IssueListWithTitles(APIView):
+    # api/v1/my-issues/?projectid=
+    def get(self, request, format=None):
+        projectid = request.GET.get("projectid")
+        if projectid:
+            issues = Issue.objects.filter(projectid=projectid)
+        else:
+            issues = Issue.objects.all()
+        issuesWithTitles = []
+        for i in issues:
+            issue = {
+                "id": i.id,
+                "created": i.created,
+                "title": i.title,
+                "description": i.description,
+                "time_estimate": i.time_estimate,
+                "user": "",
+                "project": i.projectid,
+                "issueType": i.issueTypeId,
+                "issueStatus": i.issueStatusId,
+                "issueSeverity": i.issueSeverityId
+            }
+            issuesWithTitles.append(issue)
+        serializer = IssueSerializerWithTitles(issuesWithTitles, many=True)
+        return Response(serializer.data)
