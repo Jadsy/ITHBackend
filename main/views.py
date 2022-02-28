@@ -2,7 +2,7 @@ from .models import Issue
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from rest_framework import status
 from .serializers import IssueSerializerWithTitles, ProfileSerializer, IssueSerializer, ProjectSerializer, IssueSeveritySerializer, IssueStatusSerializer, IssueTypeSerializer, AssigneesSerializer
 from .models import Profile, Project, Issue, IssueSeverity, IssueType, IssueStatus, Assignees
 
@@ -60,9 +60,25 @@ class IssueList(APIView):
             issueSeverityId=IssueSeverity.objects.get(
                 id=issue_data['issueSeverityId']),
         )
-        new_issue.save()
         serializer = IssueSerializer(new_issue)
+        if serializer.is_valid():
+            serializer.save()
         return Response(serializer.data)
+
+    def put(self, request, format=None):
+        updatedIssue = request.data
+        oldIssue = Issue.objects.filter(id=updatedIssue.id)
+        serializer = IssueSerializer(oldIssue, data=updatedIssue)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, format=None):
+        issueid = request.GET.get("id")
+        issue = Issue.objects.filter(id=issueid)
+        issue.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SeverityList(APIView):
