@@ -1,10 +1,9 @@
-from .models import Issue
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .serializers import IssueSerializerWithTitles, ProfileSerializer, IssueSerializer, ProjectSerializer, IssueSeveritySerializer, IssueStatusSerializer, IssueTypeSerializer, AssigneesSerializer
 from .models import Profile, Project, Issue, IssueSeverity, IssueType, IssueStatus, Assignees
+from .serializers import IssueSerializerWithTitles, ProfileSerializer, IssueSerializer, ProjectSerializer, IssueSeveritySerializer, IssueStatusSerializer, IssueTypeSerializer, AssigneesSerializer
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Issue
 
 
 class ProfileList(APIView):
@@ -46,24 +45,40 @@ class IssueList(APIView):
     def post(self, request):
 
         issue_data = request.data
-        new_issue = Issue.objects.create(
+        existing_id = request.GET.get("id")
+        if existing_id:
+            # update
+            Issue.objects.filter(id=existing_id).update(
+                title=issue_data['title'],
+                description=issue_data['description'],
+                time_estimate=issue_data['time_estimate'],
+                issueSeverityId=issue_data['issueSeverityId'],
+                issueStatusId=issue_data['issueStatusId'],
+
+            )
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+
+            new_issue = Issue.objects.create(
 
 
-            title=issue_data['title'],
-            description=issue_data['description'],
-            time_estimate=issue_data['time_estimate'],
-            userid=Profile.objects.get(id=issue_data['userid']),
-            projectid=Project.objects.get(id=issue_data['projectid']),
-            issueTypeId=IssueType.objects.get(id=issue_data['issueTypeId']),
-            issueStatusId=IssueStatus.objects.get(
-                id=issue_data['issueStatusId']),
-            issueSeverityId=IssueSeverity.objects.get(
-                id=issue_data['issueSeverityId']),
-        )
-        serializer = IssueSerializer(new_issue)
-        if serializer.is_valid():
-            serializer.save()
-        return Response(serializer.data)
+                title=issue_data['title'],
+                description=issue_data['description'],
+                time_estimate=issue_data['time_estimate'],
+                userid=Profile.objects.get(id=issue_data['userid']),
+                projectid=Project.objects.get(id=issue_data['projectid']),
+                issueTypeId=IssueType.objects.get(
+                    id=issue_data['issueTypeId']),
+                issueStatusId=IssueStatus.objects.get(
+                    id=issue_data['issueStatusId']),
+                issueSeverityId=IssueSeverity.objects.get(
+                    id=issue_data['issueSeverityId']),
+            )
+            serializer = IssueSerializer(data=new_issue)
+            if serializer.is_valid():
+                serializer.save()
+            return Response(serializer.data)
 
     def put(self, request, format=None):
         updatedIssue = request.data
