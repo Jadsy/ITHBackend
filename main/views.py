@@ -15,7 +15,11 @@ class ProfileList(APIView):
 
 class ProjectList(APIView):
     def get(self, request, format=None):
-        projects = Project.objects.all()
+        id = request.GET.get("id")
+        if id:
+            projects = Project.objects.filter(id=id)
+        else:
+            projects = Project.objects.all()
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
 
