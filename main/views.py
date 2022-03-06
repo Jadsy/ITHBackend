@@ -38,8 +38,11 @@ class IssueList(APIView):
     # api/v1/my-issues/?projectid=
     def get(self, request, format=None):
         projectid = request.GET.get("projectid")
+        id = request.GET.get("id")
         if projectid:
             issue = Issue.objects.filter(projectid=projectid)
+        elif id:
+            issue = Issue.objects.filter(id=id)
         else:
             issue = Issue.objects.all()
 
