@@ -153,8 +153,11 @@ class IssueListWithTitles(APIView):
     # api/v1/my-issues/?projectid=
     def get(self, request, format=None):
         projectid = request.GET.get("projectid")
+        id = request.GET.get("id")
         if projectid:
             issues = Issue.objects.filter(projectid=projectid)
+        elif id:
+            issues = Issue.objects.filter(id=id)
         else:
             issues = Issue.objects.all()
         issuesWithTitles = []
