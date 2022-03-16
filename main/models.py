@@ -33,6 +33,10 @@ class Project(models.Model):
     title = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
     repo_link = models.CharField(max_length=255, null=True, blank=True)
+    members = models.ManyToManyField(
+        Profile,  related_name="members")
+    admin = models.ForeignKey(
+        Profile, on_delete=models.CASCADE, related_name="project_admin", null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -101,6 +105,9 @@ class Assignees(models.Model):
     userRoleId = models.ForeignKey(
         UserRole, on_delete=models.CASCADE, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (("issueId", "userId"), )
 
     def __str__(self):
         return 'Assignee'

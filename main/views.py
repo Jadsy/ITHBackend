@@ -1,5 +1,5 @@
-from .models import Profile, Project, Issue, IssueSeverity, IssueType, IssueStatus, Assignees
-from .serializers import IssueSerializerWithTitles, ProfileSerializer, IssueSerializer, ProjectSerializer, IssueSeveritySerializer, IssueStatusSerializer, IssueTypeSerializer, AssigneesSerializer
+from .models import IssueComment, Attachment, Profile, Project, Issue, IssueSeverity, IssueType, IssueStatus, Assignees
+from .serializers import IssueCommentSerializer, AttachmentSerializer, IssueSerializerWithTitles, ProfileSerializer, IssueSerializer, ProjectSerializer, IssueSeveritySerializer, IssueStatusSerializer, IssueTypeSerializer, AssigneesSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -28,10 +28,19 @@ class ProjectList(APIView):
         project_data = request.data
         new_project = Project.objects.create(
             title=project_data['title'],
+            repo_link=project_data['repo_link'],
+            members=project_data['members'],
+            admin=project_data['admin'],
         )
         new_project.save()
         serializer = ProjectSerializer(new_project)
         return Response(serializer.data)
+
+    def delete(self, request, format=None):
+        projectid = request.GET.get("id")
+        project = Project.objects.filter(id=projectid)
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class IssueList(APIView):
@@ -176,4 +185,50 @@ class IssueListWithTitles(APIView):
             }
             issuesWithTitles.append(issue)
         serializer = IssueSerializerWithTitles(issuesWithTitles, many=True)
+        return Response(serializer.data)
+
+
+class IssueCommentList(APIView):
+    def get(self, request, format=None):
+        issueId = request.GET.get("issueId")
+        if issueId:
+            comments = IssueComment.objects.filter(issueId=issueId)
+        else:
+            comments = IssueComment.objects.all()
+        serializer = IssueCommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+
+        data = request.data
+        new_comment = IssueComment.objects.create(
+            userId=data['userId'],
+            issueId=data['issueId'],
+            comment=data['comment']
+        )
+        new_comment.save()
+        serializer = IssueCommentSerializer(new_comment)
+        return Response(serializer.data)
+
+
+class IssueAttachementList(APIView):
+    def get(self, request, format=None):
+        issueId = request.GET.get("issueId")
+        if issueId:
+            attach = Attachment.objects.filter(issueId=issueId)
+        else:
+            attach = Attachment.objects.all()
+        serializer = AttachmentSerializer(attach, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+
+        data = request.data
+        new_attach = Attachment.objects.create(
+            issueId=data['issueId'],
+            title=data['title'],
+            URI=data['URI'],
+        )
+        new_attach.save()
+        serializer = AttachmentSerializer(new_attach)
         return Response(serializer.data)

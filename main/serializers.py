@@ -27,6 +27,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "title",
             "repo_link",
             "created",
+            "members",
+            "admin"
         )
 
 
@@ -131,6 +133,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
             "created",
             "issueId",
             "title",
+            "URI"
         )
 
 
