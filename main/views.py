@@ -202,12 +202,13 @@ class IssueCommentList(APIView):
 
         data = request.data
         new_comment = IssueComment.objects.create(
-            userId=data['userId'],
-            issueId=data['issueId'],
+            userId=Profile.objects.get(id=data['userId']),
+            issueId=Issue.objects.get(id=data['issueId']),
             comment=data['comment']
         )
         new_comment.save()
         serializer = IssueCommentSerializer(new_comment)
+
         return Response(serializer.data)
 
 
