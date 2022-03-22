@@ -213,7 +213,7 @@ class IssueCommentList(APIView):
 
     def delete(self, request, format=None):
         commentid = request.GET.get("id")
-        comment = Issue.objects.filter(id=commentid)
+        comment = IssueComment.objects.filter(id=commentid)
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -242,6 +242,6 @@ class IssueAttachementList(APIView):
 
     def delete(self, request, format=None):
         attachementid = request.GET.get("id")
-        attachement = Issue.objects.filter(id=attachementid)
+        attachement = Attachment.objects.filter(id=attachementid)
         attachement.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
