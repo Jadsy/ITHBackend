@@ -211,6 +211,12 @@ class IssueCommentList(APIView):
 
         return Response(serializer.data)
 
+    def delete(self, request, format=None):
+        commentid = request.GET.get("id")
+        comment = Issue.objects.filter(id=commentid)
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class IssueAttachementList(APIView):
     def get(self, request, format=None):
@@ -233,3 +239,9 @@ class IssueAttachementList(APIView):
         new_attach.save()
         serializer = AttachmentSerializer(new_attach)
         return Response(serializer.data)
+
+    def delete(self, request, format=None):
+        attachementid = request.GET.get("id")
+        attachement = Issue.objects.filter(id=attachementid)
+        attachement.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
