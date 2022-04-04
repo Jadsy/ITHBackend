@@ -8,7 +8,12 @@ from .models import Issue
 
 class ProfileList(APIView):
     def get(self, request, format=None):
-        profile = Profile.objects.all()
+        id = request.GET.get("id")
+        if id:
+            profile = Profile.objects.filter(id=id)
+        else:
+            profile = Profile.objects.all()
+
         serializer = ProfileSerializer(profile, many=True)
         return Response(serializer.data)
 
