@@ -9,7 +9,7 @@ from .models import Issue
 class ProfileList(APIView):
     def get(self, request, format=None):
         profile = Profile.objects.all()
-        serializer = ProjectSerializer(profile, many=True)
+        serializer = ProfileSerializer(profile, many=True)
         return Response(serializer.data)
 
 
