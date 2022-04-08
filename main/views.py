@@ -10,7 +10,7 @@ class ProfileList(APIView):
     def get(self, request, format=None):
         id = request.GET.get("id")
         if id:
-            profile = Profile.objects.filter(id=id)
+            profile = Profile.objects.filter(user=id)
         else:
             profile = Profile.objects.all()
 
