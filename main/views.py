@@ -35,7 +35,7 @@ class ProjectList(APIView):
             title=project_data['title'],
             repo_link=project_data['repo_link'],
             members=project_data['members'],
-            admin=project_data['admin'],
+            admin=Profile.objects.get(id=project_data['admin']),
         )
         new_project.save()
         serializer = ProjectSerializer(new_project)

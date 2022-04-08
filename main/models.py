@@ -34,7 +34,7 @@ class Project(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     repo_link = models.CharField(max_length=255, null=True, blank=True)
     members = models.ManyToManyField(
-        Profile,  related_name="members", null=True, blank=True)
+        Profile,  related_name="members", blank=True)
     admin = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="project_admin", null=True, blank=True)
 
