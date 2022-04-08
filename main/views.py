@@ -34,10 +34,11 @@ class ProjectList(APIView):
         new_project = Project.objects.create(
             title=project_data['title'],
             repo_link=project_data['repo_link'],
-            members=project_data['members'],
             admin=Profile.objects.get(id=project_data['admin']),
         )
         new_project.save()
+        for i in project_data['members']:
+            new_project.members.add(i)
         serializer = ProjectSerializer(new_project)
         return Response(serializer.data)
 
