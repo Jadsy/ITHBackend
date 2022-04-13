@@ -73,9 +73,9 @@ class IssueList(APIView):
             Issue.objects.filter(id=existing_id).update(
                 title=issue_data['title'],
                 description=issue_data['description'],
-                time_estimate=issue_data['time_estimate'],
                 issueSeverityId=issue_data['issueSeverityId'],
                 issueStatusId=issue_data['issueStatusId'],
+                isComplete=issue_data['isComplete'],
 
             )
 
@@ -87,7 +87,6 @@ class IssueList(APIView):
 
                 title=issue_data['title'],
                 description=issue_data['description'],
-                time_estimate=issue_data['time_estimate'],
                 userid=Profile.objects.get(id=issue_data['userid']),
                 projectid=Project.objects.get(id=issue_data['projectid']),
                 issueTypeId=IssueType.objects.get(
@@ -96,6 +95,7 @@ class IssueList(APIView):
                     id=issue_data['issueStatusId']),
                 issueSeverityId=IssueSeverity.objects.get(
                     id=issue_data['issueSeverityId']),
+                isComplete=issue_data['isComplete'],
             )
             serializer = IssueSerializer(data=new_issue)
             if serializer.is_valid():
@@ -143,13 +143,32 @@ class StatusList(APIView):
 
 class TypeList(APIView):
     def get(self, request, format=None):
-        id = request.GET.get("id")
+        projectid = request.GET.get("projectid")
         if id:
-            issueType = IssueType.objects.filter(id=id)
+            issueType = IssueType.objects.filter(projectid=projectid)
         else:
             issueType = IssueType.objects.all()
         serializer = IssueTypeSerializer(issueType, many=True)
         return Response(serializer.data)
+
+    def post(self, request):
+
+        data = request.data
+        new_type = IssueType.objects.create(
+            title=data['title'],
+            needSeverity=data['needSeverity'],
+            projectid=Project.objects.get(id=data['projectid'])
+        )
+        new_type.save()
+        serializer = IssueTypeSerializer(new_type)
+
+        return Response(serializer.data)
+
+    def delete(self, request, format=None):
+        typeid = request.GET.get("id")
+        type = IssueComment.objects.filter(id=typeid)
+        type.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AssigneesList(APIView):

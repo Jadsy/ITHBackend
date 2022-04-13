@@ -56,6 +56,8 @@ class IssueTypeSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "title",
+            "needSeverity",
+            "projectid"
         )
 
 
@@ -84,12 +86,12 @@ class IssueSerializer(serializers.ModelSerializer):
             "created",
             "title",
             "description",
-            "time_estimate",
             "userid",
             "projectid",
             "issueTypeId",
             "issueStatusId",
             "issueSeverityId",
+            "isComplete"
         )
 
 

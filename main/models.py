@@ -64,6 +64,9 @@ class IssueType(models.Model):
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
     title = models.CharField(max_length=100)
+    needSeverity = models.BooleanField(default=True)
+    projectid = models.ForeignKey(
+        Project, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -74,14 +77,17 @@ class Issue(models.Model):
                           primary_key=True, editable=False)
     created = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=100)
-    description = models.TextField(null=True, blank=True, max_length=1024)
-    time_estimate = models.FloatField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True, max_length=1024, )
+
     userid = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    projectid = models.ForeignKey(Project, on_delete=models.CASCADE)
-    issueTypeId = models.ForeignKey(IssueType, on_delete=models.CASCADE)
-    issueStatusId = models.ForeignKey(IssueStatus, on_delete=models.CASCADE)
+    projectid = models.ForeignKey(
+        Project, on_delete=models.CASCADE, null=True, blank=True)
+    issueTypeId = models.ForeignKey(
+        IssueType, on_delete=models.CASCADE, null=True, blank=True)
+    issueStatusId = models.ForeignKey(IssueStatus, on_delete=models.CASCADE, )
     issueSeverityId = models.ForeignKey(
-        IssueSeverity, on_delete=models.CASCADE)
+        IssueSeverity, on_delete=models.CASCADE, null=True, blank=True)
+    isComplete = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
