@@ -154,15 +154,29 @@ class TypeList(APIView):
     def post(self, request):
 
         data = request.data
-        new_type = IssueType.objects.create(
-            title=data['title'],
-            needSeverity=data['needSeverity'],
-            projectid=Project.objects.get(id=data['projectid'])
-        )
-        new_type.save()
-        serializer = IssueTypeSerializer(new_type)
+        existing_id = request.GET.get("id")
+        if existing_id:
+            # update
+            IssueType.objects.filter(id=existing_id).update(
+                title=data['title'],
+                needSeverity=data['needSeverity'],
+                projectid=Project.objects.get(id=data['projectid'])
+                color=data['color']
 
-        return Response(serializer.data)
+            )
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            new_type = IssueType.objects.create(
+                title=data['title'],
+                needSeverity=data['needSeverity'],
+                projectid=Project.objects.get(id=data['projectid'])
+                color=data['color']
+            )
+            serializer = IssueTypeSerializer(data=new_type)
+            if serializer.is_valid():
+                serializer.save()
+            return Response(serializer.data)
 
     def delete(self, request, format=None):
         typeid = request.GET.get("id")
