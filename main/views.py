@@ -160,7 +160,7 @@ class TypeList(APIView):
             IssueType.objects.filter(id=existing_id).update(
                 title=data['title'],
                 needSeverity=data['needSeverity'],
-                projectid=Project.objects.get(id=data['projectid'])
+                projectid=Project.objects.get(id=data['projectid']),
                 color=data['color']
 
             )
@@ -170,7 +170,7 @@ class TypeList(APIView):
             new_type = IssueType.objects.create(
                 title=data['title'],
                 needSeverity=data['needSeverity'],
-                projectid=Project.objects.get(id=data['projectid'])
+                projectid=Project.objects.get(id=data['projectid']),
                 color=data['color']
             )
             serializer = IssueTypeSerializer(data=new_type)
