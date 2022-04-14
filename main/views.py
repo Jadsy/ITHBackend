@@ -201,12 +201,12 @@ class IssueListWithTitles(APIView):
                 "created": i.created,
                 "title": i.title,
                 "description": i.description,
-                "time_estimate": i.time_estimate,
                 "user": "",
                 "project": i.projectid,
                 "issueType": i.issueTypeId,
                 "issueStatus": i.issueStatusId,
-                "issueSeverity": i.issueSeverityId
+                "issueSeverity": i.issueSeverityId,
+                "isComplete": i.isComplete
             }
             issuesWithTitles.append(issue)
         serializer = IssueSerializerWithTitles(issuesWithTitles, many=True)

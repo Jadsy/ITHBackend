@@ -3,6 +3,7 @@ from django.db import models
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
+from djangoHexadecimal.fields import HexadecimalField
 
 
 class Profile(models.Model):
@@ -67,6 +68,7 @@ class IssueType(models.Model):
     needSeverity = models.BooleanField(default=True)
     projectid = models.ForeignKey(
         Project, on_delete=models.CASCADE, null=True, blank=True)
+    color = HexadecimalField(max_length='25', null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -153,6 +155,7 @@ class IssueWithTitles(models.Model):
     issueType = models.CharField(max_length=200)
     issueStatus = models.CharField(max_length=200)
     issueSeverity = models.CharField(max_length=200)
+    isComplete = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title

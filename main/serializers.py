@@ -147,10 +147,10 @@ class IssueSerializerWithTitles(serializers.ModelSerializer):
             "created",
             "title",
             "description",
-            "time_estimate",
             "user",
             "project",
             "issueType",
             "issueStatus",
             "issueSeverity",
+            "isComplete"
         )
