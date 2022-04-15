@@ -57,7 +57,8 @@ class IssueTypeSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "needSeverity",
-            "projectid"
+            "projectid",
+            "color"
         )
 
 
