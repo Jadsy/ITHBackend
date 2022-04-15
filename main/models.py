@@ -70,8 +70,8 @@ class IssueType(models.Model):
         Project, on_delete=models.CASCADE, null=True, blank=True)
     color = models.CharField(max_length=100, null=True, blank=True)
 
-    def __str__(self):
-        return self.title
+    # def __str__(self):
+    #     return self.title
 
 
 class Issue(models.Model):
@@ -152,9 +152,9 @@ class IssueWithTitles(models.Model):
     time_estimate = models.FloatField(null=True, blank=True)
     user = models.CharField(max_length=200)
     project = models.CharField(max_length=200)
-    issueType = models.CharField(max_length=200)
-    issueStatus = models.CharField(max_length=200)
-    issueSeverity = models.CharField(max_length=200)
+    issueType = models.JSONField()
+    issueStatus = models.JSONField()
+    issueSeverity = models.JSONField()
     isComplete = models.BooleanField(default=True)
 
     def __str__(self):

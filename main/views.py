@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Issue
+import json
 
 
 class ProfileList(APIView):
@@ -210,6 +211,7 @@ class IssueListWithTitles(APIView):
             issues = Issue.objects.all()
         issuesWithTitles = []
         for i in issues:
+
             issue = {
                 "id": i.id,
                 "created": i.created,
@@ -217,11 +219,12 @@ class IssueListWithTitles(APIView):
                 "description": i.description,
                 "user": "",
                 "project": i.projectid,
-                "issueType": i.issueTypeId,
-                "issueStatus": i.issueStatusId,
-                "issueSeverity": i.issueSeverityId,
+                "issueType": IssueType.objects.filter(id=i.issueTypeId.id).values()[0],
+                "issueStatus": IssueStatus.objects.filter(id=i.issueStatusId.id).values()[0],
+                "issueSeverity": IssueSeverity.objects.filter(id=i.issueSeverityId.id).values()[0],
                 "isComplete": i.isComplete
             }
+
             issuesWithTitles.append(issue)
         serializer = IssueSerializerWithTitles(issuesWithTitles, many=True)
         return Response(serializer.data)
