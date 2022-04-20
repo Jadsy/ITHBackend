@@ -151,7 +151,7 @@ class IssueWithTitles(models.Model):
     description = models.TextField(null=True, blank=True)
     time_estimate = models.FloatField(null=True, blank=True)
     user = models.CharField(max_length=200)
-    project = models.CharField(max_length=200)
+    project = models.JSONField()
     issueType = models.JSONField()
     issueStatus = models.JSONField()
     issueSeverity = models.JSONField()

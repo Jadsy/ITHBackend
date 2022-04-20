@@ -218,7 +218,7 @@ class IssueListWithTitles(APIView):
                 "title": i.title,
                 "description": i.description,
                 "user": "",
-                "project": i.projectid,
+                "project": Project.objects.filter(id=i.projectid.id).values()[0],
                 "issueType": IssueType.objects.filter(id=i.issueTypeId.id).values()[0],
                 "issueStatus": IssueStatus.objects.filter(id=i.issueStatusId.id).values()[0],
                 "issueSeverity": IssueSeverity.objects.filter(id=i.issueSeverityId.id).values()[0],
