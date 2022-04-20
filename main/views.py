@@ -94,8 +94,8 @@ class IssueList(APIView):
                     id=issue_data['issueTypeId']),
                 issueStatusId=IssueStatus.objects.get(
                     id=issue_data['issueStatusId']),
-                issueSeverityId=IssueSeverity.objects.get(
-                    id=issue_data['issueSeverityId']),
+                issueSeverityId=(None if (issue_data['issueSeverityId'] is None) else IssueSeverity.objects.get(
+                    id=issue_data['issueSeverityId'])),
                 isComplete=issue_data['isComplete'],
             )
             serializer = IssueSerializer(data=new_issue)
