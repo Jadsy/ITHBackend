@@ -12,4 +12,5 @@ urlpatterns = [
     path('my-types/', views.TypeList.as_view()),
     path('my-comments/', views.IssueCommentList.as_view()),
     path('my-attachements/', views.IssueAttachementList.as_view()),
+    path('auth/', views.CustomObtainAuthToken.as_view()),
 ]
