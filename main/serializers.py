@@ -15,6 +15,9 @@ class ProfileSerializer(serializers.ModelSerializer):
             "social_github",
             "social_twitter",
             "social_linkedin",
+            "first_name",
+            "last_name",
+            "email",
             "created"
         )
 
