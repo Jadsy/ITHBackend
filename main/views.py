@@ -1,47 +1,103 @@
-from .models import IssueComment, Attachment, Profile, Project, Issue, IssueSeverity, IssueType, IssueStatus, Assignees
+from .models import IssueComment, Attachment, Profile, Project, Issue, IssueSeverity, IssueType, IssueStatus, Assignees, User
 from .serializers import IssueCommentSerializer, AttachmentSerializer, IssueSerializerWithTitles, ProfileSerializer, IssueSerializer, ProjectSerializer, IssueSeveritySerializer, IssueStatusSerializer, IssueTypeSerializer, AssigneesSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Issue
 import json
+from django.contrib.auth import authenticate, login
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from django.core import serializers
+
+
+class CustomObtainAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        response = super(CustomObtainAuthToken, self).post(
+            request, *args, **kwargs)
+        token = Token.objects.get(key=response.data['token'])
+        profile = Profile.objects.get(user=token.user_id)
+        serializer = ProfileSerializer(profile)
+        r = serializer.data
+        r.update({'token': token.key})
+        return Response(r)
 
 
 class ProfileList(APIView):
     def get(self, request, format=None):
         id = request.GET.get("id")
+        email = request.GET.get("email")
         if id:
-            profile = Profile.objects.filter(user=id)
+            profile = Profile.objects.filter(id=id)
+        elif email:
+            profile = Profile.objects.filter(email=email)
         else:
             profile = Profile.objects.all()
 
         serializer = ProfileSerializer(profile, many=True)
         return Response(serializer.data)
 
+    def post(self, request):
+
+        profile_data = request.data
+        existing_id = request.GET.get("id")
+        if existing_id:
+            # update
+            Profile.objects.filter(id=existing_id).update(
+                first_name=profile_data['first_name'],
+                last_name=profile_data['last_name'],
+                email=profile_data['email']
+            )
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            new_profile = Profile.objects.create(
+                user=User.objects.get(id=profile_data['user']),
+                first_name=profile_data['first_name'],
+                last_name=profile_data['last_name'],
+                email=profile_data['email']
+            )
+        serialized_obj = ProfileSerializer(new_profile)
+        return Response(serialized_obj.data)
+
 
 class ProjectList(APIView):
     def get(self, request, format=None):
         id = request.GET.get("id")
+        userid = request.GET.get("userid")
+
         if id:
             projects = Project.objects.filter(id=id)
+        elif userid:
+            projects = Project.objects.filter(members__id=userid)
+
         else:
             projects = Project.objects.all()
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-
+        id = request.GET.get("id")
         project_data = request.data
-        new_project = Project.objects.create(
-            title=project_data['title'],
-            repo_link=project_data['repo_link'],
-            admin=Profile.objects.get(id=project_data['admin']),
-        )
-        new_project.save()
-        for i in project_data['members']:
-            new_project.members.add(i)
-        serializer = ProjectSerializer(new_project)
-        return Response(serializer.data)
+        if id:
+            project = Project.objects.get(id=id)
+            for i in project_data['members']:
+                project.members.add(i)
+            serializer = ProjectSerializer(project)
+            return Response(serializer.data)
+        else:
+
+            new_project = Project.objects.create(
+                title=project_data['title'],
+                repo_link=project_data['repo_link'],
+                admin=Profile.objects.get(id=project_data['admin']),
+            )
+            new_project.save()
+            for i in project_data['members']:
+                new_project.members.add(i)
+            serializer = ProjectSerializer(new_project)
+            return Response(serializer.data)
 
     def delete(self, request, format=None):
         projectid = request.GET.get("id")
@@ -55,10 +111,13 @@ class IssueList(APIView):
     def get(self, request, format=None):
         projectid = request.GET.get("projectid")
         id = request.GET.get("id")
+        userid = request.GET.get("userid")
         if projectid:
             issue = Issue.objects.filter(projectid=projectid)
         elif id:
             issue = Issue.objects.filter(id=id)
+        elif userid:
+            issue = Issue.objects.filter(userid=userid)
         else:
             issue = Issue.objects.all()
 
@@ -98,9 +157,7 @@ class IssueList(APIView):
                     id=issue_data['issueSeverityId'])),
                 isComplete=issue_data['isComplete'],
             )
-            serializer = IssueSerializer(data=new_issue)
-            if serializer.is_valid():
-                serializer.save()
+            serializer = IssueSerializer(new_issue)
             return Response(serializer.data)
 
     def put(self, request, format=None):
@@ -189,12 +246,27 @@ class TypeList(APIView):
 class AssigneesList(APIView):
     def get(self, request, format=None):
         userId = request.GET.get("userId")
+        issueId = request.GET.get("issueId")
         if userId:
             assignee = Assignees.objects.filter(userId=userId)
+        elif issueId:
+            assignee = Assignees.objects.filter(issueId=issueId)
         else:
             assignee = Assignees.objects.all()
 
         serializer = AssigneesSerializer(assignee, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+
+        data = request.data
+        new_assignment = Assignees.objects.create(
+            issueId=Issue.objects.get(id=data['issueId']),
+            userId=Profile.objects.get(id=data['userId'])
+        )
+        new_assignment.save()
+        serializer = AssigneesSerializer(new_assignment)
+
         return Response(serializer.data)
 
 
@@ -203,10 +275,13 @@ class IssueListWithTitles(APIView):
     def get(self, request, format=None):
         projectid = request.GET.get("projectid")
         id = request.GET.get("id")
+        userid = request.GET.get("userid")
         if projectid:
             issues = Issue.objects.filter(projectid=projectid)
         elif id:
             issues = Issue.objects.filter(id=id)
+        elif userid:
+            issues = Issue.objects.filter(userid=userid)
         else:
             issues = Issue.objects.all()
         issuesWithTitles = []
@@ -217,11 +292,11 @@ class IssueListWithTitles(APIView):
                 "created": i.created,
                 "title": i.title,
                 "description": i.description,
-                "user": "",
+                "user": Profile.objects.filter(id=i.userid.id).values()[0],
                 "project": Project.objects.filter(id=i.projectid.id).values()[0],
                 "issueType": IssueType.objects.filter(id=i.issueTypeId.id).values()[0],
                 "issueStatus": IssueStatus.objects.filter(id=i.issueStatusId.id).values()[0],
-                "issueSeverity": IssueSeverity.objects.filter(id=i.issueSeverityId.id).values()[0],
+                "issueSeverity": (None if i.issueSeverityId is None else IssueSeverity.objects.filter(id=i.issueSeverityId.id).values()[0]),
                 "isComplete": i.isComplete
             }
 
