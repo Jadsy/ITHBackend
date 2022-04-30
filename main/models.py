@@ -19,7 +19,8 @@ class Profile(models.Model):
     social_github = models.CharField(max_length=50, null=True, blank=True)
     social_twitter = models.CharField(max_length=50, null=True, blank=True)
     social_linkedin = models.CharField(max_length=50, null=True, blank=True)
-    email = models.CharField(max_length=50, null=True, blank=True)
+    email = models.EmailField(
+        max_length=255, null=True, blank=True, unique=True)
     first_name = models.CharField(max_length=50, null=True, blank=True)
     last_name = models.CharField(max_length=50, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -150,7 +151,7 @@ class IssueWithTitles(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     time_estimate = models.FloatField(null=True, blank=True)
-    user = models.CharField(max_length=200)
+    user = models.JSONField()
     project = models.JSONField()
     issueType = models.JSONField()
     issueStatus = models.JSONField()
